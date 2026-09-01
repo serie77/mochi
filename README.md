@@ -58,6 +58,19 @@ running costs: none. all contract state transitions happen inside user transacti
 her voice posts on the free tier (`X_API_KEY`…). gifts by tweet need the basic-tier `X_BEARER_TOKEN`:
 `@mochi gift @friend 50 ribbons` · `@mochi gift @friend hair-midnight` · `@mochi claim 0xWallet`. fixed grammar, no model reads tweets.
 
-## deploy the site (railway)
+## deploy the site (vercel, free)
+
+the site runs serverless: with `DATABASE_URL` set, all state lives in postgres and epochs
+close on demand inside requests (no background process needed).
+
+1. create a free postgres at neon.tech (github sign-in, no card) and copy the connection string
+2. import the github repo on vercel (hobby tier, free)
+3. set the env vars: `DATABASE_URL`, `VAULT_CA`, `X_USERNAME`, `AUTH_SECRET` (any long random
+   string), `NEXT_PUBLIC_CHARACTER_MODEL=/mochi.vrm`, `SITE_URL` (and `TOKEN_CA`/`STAKING_CA`
+   after launch) — then deploy
+4. epochs close when someone loads the site after the 4h mark. optional: point any free
+   uptime pinger at `/api/state` so closes never wait for a visitor
+
+## deploy the site (railway / self-host)
 
 start command `node agent/index.js & npm start`, volume at `/app/data`, env vars in service settings.

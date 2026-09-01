@@ -8,11 +8,11 @@ import { lookFromItems } from "../../../lib/protocol.js";
 export const dynamic = "force-dynamic";
 
 export async function POST(req) {
-  const a = sessionOf(req);
+  const a = await sessionOf(req);
   if (!a) return unauthorized();
   const body = await req.json().catch(() => null);
   const want = Array.isArray(body?.items) ? body.items.map(String) : [];
-  const own = new Set(inventoryOf(a));
+  const own = new Set(await inventoryOf(a));
   const bySlot = {};
   for (const id of want) {
     const it = itemById(id);
@@ -22,10 +22,10 @@ export async function POST(req) {
   }
   const items = SLOTS.map((s) => bySlot[s]).filter(Boolean);
   await withLock(async () => {
-    const all = readJson("customs.json", {});
+    const all = await readJson("customs.json", {});
     if (items.length) all[a] = items;
     else delete all[a];
-    writeJson("customs.json", all);
+    await writeJson("customs.json", all);
   });
   return Response.json({ ok: true, equipped: items, look: lookFromItems(items) });
 }

@@ -1,4 +1,4 @@
-// gift ribbons or an owned item to a wallet or an x handle (held until they claim by tweet).
+// gift ribbons or an owned item to another wallet.
 import { sessionOf, unauthorized } from "../../../lib/auth.js";
 import { addr } from "../../../lib/chain.js";
 import { itemById } from "../../../lib/catalog.js";
@@ -7,7 +7,7 @@ import { mutate, debit, credit, takeItem, grantItem, deliverToHandle, logGift, n
 export const dynamic = "force-dynamic";
 
 export async function POST(req) {
-  const a = sessionOf(req);
+  const a = await sessionOf(req);
   if (!a) return unauthorized();
   const body = await req.json().catch(() => null);
   const to = String(body?.to || "").trim();
@@ -19,7 +19,7 @@ export async function POST(req) {
 
   const toAddr = addr(to);
   const toHandle = !toAddr && /^@?[A-Za-z0-9_]{1,15}$/.test(to) ? normHandle(to) : null;
-  if (!toAddr && !toHandle) return Response.json({ ok: false, error: "send to a 0x address or an @handle" }, { status: 400 });
+  if (!toAddr && !toHandle) return Response.json({ ok: false, error: "send to a 0x wallet address" }, { status: 400 });
   if (toAddr === a) return Response.json({ ok: false, error: "that is you" }, { status: 400 });
 
   try {

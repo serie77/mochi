@@ -4,9 +4,9 @@ import { protocol, castVote, tally } from "../../../lib/protocol.js";
 export const dynamic = "force-dynamic";
 
 export async function GET(req) {
-  const p = protocol();
+  const p = await protocol();
   const t = tally(p);
-  const a = sessionOf(req);
+  const a = await sessionOf(req);
   return Response.json({
     ok: true,
     epoch: p.epoch,
@@ -18,7 +18,7 @@ export async function GET(req) {
 }
 
 export async function POST(req) {
-  const a = sessionOf(req);
+  const a = await sessionOf(req);
   if (!a) return unauthorized();
   const body = await req.json().catch(() => null);
   try {

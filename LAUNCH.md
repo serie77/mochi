@@ -64,6 +64,15 @@ restart: `npm run up` (on railway: redeploy with the same vars)
 - cast a vote; check the landing shows tvl and the countdown
 - (apy tile shows "–" for the first ~6h while it samples the real share price. expected.)
 
-## 6. optional, any time later
+## 6. hosting (vercel free + neon free)
+- neon.tech -> new project -> copy DATABASE_URL
+- vercel.com -> import github repo serie77/mochi -> env vars:
+  DATABASE_URL, VAULT_CA=0x3fFd93282A54ECAF49A9813562579A561D0E58c5, X_USERNAME=mochistaking,
+  AUTH_SECRET=<long random>, NEXT_PUBLIC_CHARACTER_MODEL=/mochi.vrm, SITE_URL=<your url>
+  (add TOKEN_CA + STAKING_CA after launch and redeploy)
+- point cloudflare dns at the vercel domain
+- optional: free uptime pinger hitting /api/state every 5 min so epochs close on the dot
+
+## 7. optional, any time later
 - x keys in .env for her voice (free tier); `X_BEARER_TOKEN` (basic tier) for gifts-by-tweet
 - point dns at railway

@@ -8,12 +8,12 @@ import { vaultPosition } from "../../../lib/vault.js";
 export const dynamic = "force-dynamic";
 
 export async function GET(req) {
-  const a = sessionOf(req);
+  const a = await sessionOf(req);
   if (!a) return Response.json({ ok: true, address: null });
   const c = cfg();
-  const p = protocol();
-  const equipped = readJson("customs.json", {})[a] || [];
-  const handles = readJson("handles.json", {});
+  const p = await protocol();
+  const equipped = (await readJson("customs.json", {}))[a] || [];
+  const handles = await readJson("handles.json", {});
   const handle = Object.keys(handles).find((h) => handles[h] === a) || null;
   let tokenBalance = null;
   if (c.tokenCa) {
@@ -29,15 +29,15 @@ export async function GET(req) {
   if (c.vaultCa) {
     vault = await vaultPosition(a).catch(() => null);
   }
-  const gifts = readJson("gifts.json", [])
+  const gifts = (await readJson("gifts.json", []))
     .filter((g) => g.from === a || g.to === a || (handle && g.to === "@" + handle))
     .slice(-30)
     .reverse();
   return Response.json({
     ok: true,
     address: a,
-    ribbons: ribbonsOf(a),
-    inventory: inventoryOf(a),
+    ribbons: await ribbonsOf(a),
+    inventory: await inventoryOf(a),
     equipped,
     look: lookFromItems(equipped),
     vote: p.votes[a] || null,
@@ -45,7 +45,7 @@ export async function GET(req) {
     tokenBalance,
     usdgBalance,
     vault,
-    history: historyOf(a, 40),
+    history: await historyOf(a, 40),
     gifts,
   });
 }

@@ -1,6 +1,9 @@
-// mochi: the engine. every tick it heartbeats, closes the epoch when it is due (snapshot holders,
-// mint ribbons, tally the vote, change her look), reads x mentions for gift/claim commands, and
-// posts in her voice. it holds no keys to anything but her x account.
+// mochi: the engine (self-hosting mode). every tick it heartbeats, closes the epoch when
+// due (snapshot holders, mint ribbons, tally the vote, change her look), reads x mentions
+// for gift/claim commands, and posts in her voice. it holds no keys to anything but x.
+//
+// on serverless hosting (DATABASE_URL set) this process is optional: the site itself
+// closes epochs on demand inside requests.
 //
 //   node agent/index.js               run forever
 //   node agent/index.js --once        one tick, then exit
@@ -9,10 +12,10 @@
 import path from "path";
 import { cfg, readJson, writeJson, pushCapped } from "../lib/store.js";
 import { protocol, runEpoch, mode } from "../lib/protocol.js";
-import { vaultStats, vaultCfg } from "../lib/vault.js";
-import { mutate, credit, debit, takeItem, grantItem, addrOfHandle, deliverToHandle, linkHandle, logGift } from "../lib/ledger.js";
+import { mutate, debit, takeItem, addrOfHandle, deliverToHandle, linkHandle, logGift } from "../lib/ledger.js";
 import { itemById } from "../lib/catalog.js";
 import { parseCommand } from "../lib/x-commands.js";
+import { vaultStats, vaultCfg } from "../lib/vault.js";
 import { compose } from "./persona.js";
 import { tweet, xEnabled, xReadEnabled, mentions, resolveUserId } from "./x.js";
 
@@ -27,9 +30,9 @@ const MENTIONS_EVERY_MS = num("MENTIONS_EVERY_SEC", 60) * 1000;
 const ONCE = process.argv.includes("--once");
 const EPOCH_NOW = process.argv.includes("--epoch-now");
 
-const log = (text) => {
-  console.log("[machine]", text);
-  pushCapped("decisions.json", { time: Date.now(), text }, 300);
+const log = async (text) => {
+  console.log("[engine]", text);
+  await pushCapped("decisions.json", { time: Date.now(), text }, 300);
 };
 
 const left = (ms) => {
@@ -48,14 +51,14 @@ async function post(kind, ctx) {
       console.error("x post failed:", e.message);
     }
   }
-  pushCapped(
+  await pushCapped(
     "feed.json",
     { id: `${Date.now()}-${Math.random().toString(36).slice(2, 7)}`, createdAt: Date.now(), kind, text, tweetId },
     300
   );
-  const st = readJson("agent-state.json", {});
+  const st = await readJson("agent-state.json", {});
   st.lastPostAt = Date.now();
-  writeJson("agent-state.json", st);
+  await writeJson("agent-state.json", st);
   console.log("[post]", text.replace(/\n/g, " / "), tweetId ? `(x:${tweetId})` : "");
 }
 
@@ -75,7 +78,6 @@ async function handleMention(m) {
     await post("claim", { handle: from, released: note });
     return `${from} linked to ${cmd.address.slice(0, 6)}…${cmd.address.slice(-4)}. ${note}`;
   }
-  // gift
   try {
     const res = await mutate(async (s, touch) => {
       const sender = addrOfHandle(s, m.username);
@@ -97,42 +99,41 @@ async function handleMention(m) {
 }
 
 async function pollMentions() {
-  const st = readJson("x-state.json", {});
+  const st = await readJson("x-state.json", {});
   if (!st.userId) {
     st.userId = await resolveUserId(cfg().xUsername);
     if (!st.userId) throw new Error("could not resolve x user id");
   }
-  const list = (await mentions(st.userId, st.sinceId)).reverse(); // oldest first
+  const list = (await mentions(st.userId, st.sinceId)).reverse();
   for (const m of list) {
     try {
       const reply = await handleMention(m);
       if (reply) {
-        log(`x: ${m.text.slice(0, 80)} -> ${reply.slice(0, 80)}`);
+        await log(`x: ${m.text.slice(0, 80)} -> ${reply.slice(0, 80)}`);
         if (xEnabled()) await tweet(reply, { replyTo: m.id }).catch((e) => console.error("reply failed:", e.message));
       }
     } catch (e) {
       console.error("mention failed:", e.message);
     }
     st.sinceId = m.id;
-    writeJson("x-state.json", st);
+    await writeJson("x-state.json", st);
   }
   st.lastPollAt = Date.now();
-  writeJson("x-state.json", st);
+  await writeJson("x-state.json", st);
 }
 
 /* ---------- the tick ---------- */
 
 let forced = EPOCH_NOW;
 async function tick() {
-  writeJson("heartbeat.json", { time: Date.now(), mode: mode() });
-  const p = protocol();
+  await writeJson("heartbeat.json", { time: Date.now(), mode: mode() });
+  const p = await protocol();
 
-  // close the epoch when due
   if (forced || Date.now() >= p.nextEpochAt) {
     const closed = await runEpoch({ force: forced });
     forced = false;
     if (closed) {
-      log(
+      await log(
         `epoch ${closed.epoch} closed: ${closed.ribbonsMinted} ribbons to ${closed.holders || closed.voters} wallets, winner "${closed.winner.name}"` +
           (closed.snapshotError ? ` (snapshot failed: ${closed.snapshotError})` : "")
       );
@@ -140,7 +141,7 @@ async function tick() {
       if (vaultCfg().vaultCa) {
         try {
           const v = await vaultStats();
-          if (v) {
+          if (v && v.tvl > 0) {
             vaultLine = `the vault holds $${Math.round(v.tvl).toLocaleString("en-US")}` +
               (v.apy != null ? ` at ${v.apy.toFixed(2)}% apy` : "") + ".";
           }
@@ -157,9 +158,8 @@ async function tick() {
     }
   }
 
-  // read the timeline
   if (xReadEnabled()) {
-    const xs = readJson("x-state.json", {});
+    const xs = await readJson("x-state.json", {});
     if (!xs.lastPollAt || Date.now() - xs.lastPollAt > MENTIONS_EVERY_MS) {
       try {
         await pollMentions();
@@ -169,10 +169,9 @@ async function tick() {
     }
   }
 
-  // idle thoughts
-  const st = readJson("agent-state.json", {});
+  const st = await readJson("agent-state.json", {});
   if (!st.lastPostAt || Date.now() - st.lastPostAt > POST_EVERY_MS) {
-    const q = protocol();
+    const q = await protocol();
     await post("idle", {
       epoch: q.epoch,
       left: left(q.nextEpochAt - Date.now()),
@@ -196,8 +195,8 @@ async function loop() {
 }
 
 {
-  const p = protocol();
-  console.log(`mochi machine. mode=${mode()} epoch=${p.epoch} next in ${left(p.nextEpochAt - Date.now())}`);
+  const p = await protocol();
+  console.log(`mochi engine. mode=${mode()} epoch=${p.epoch} next in ${left(p.nextEpochAt - Date.now())}`);
   if (!ONCE) await post("boot", { epoch: p.epoch, left: left(p.nextEpochAt - Date.now()) });
 }
 loop();

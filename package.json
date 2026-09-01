@@ -16,6 +16,7 @@
     "@anthropic-ai/sdk": "latest",
     "@pixiv/three-vrm": "^3.5.5",
     "next": "^15.1.6",
+    "pg": "^8.23.0",
     "pixi-live2d-display": "^0.4.0",
     "pixi.js": "^6.5.10",
     "react": "^19.0.0",

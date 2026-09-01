@@ -21,12 +21,22 @@ class Client {
     this.account = privateKeyToAccount(generatePrivateKey());
     this.cookie = "";
   }
-  async req(path, body, method) {
-    const r = await fetch(BASE + path, {
-      method: method || (body ? "POST" : "GET"),
-      headers: { "content-type": "application/json", cookie: this.cookie },
-      body: body ? JSON.stringify(body) : undefined,
-    });
+  async req(path, body, method, attempt = 0) {
+    let r;
+    try {
+      r = await fetch(BASE + path, {
+        method: method || (body ? "POST" : "GET"),
+        headers: { "content-type": "application/json", cookie: this.cookie },
+        body: body ? JSON.stringify(body) : undefined,
+      });
+    } catch (e) {
+      // windows: a spawned child inherits our keep-alive sockets and resets them on exit
+      if (attempt < 2) {
+        await new Promise((res) => setTimeout(res, 600));
+        return this.req(path, body, method, attempt + 1);
+      }
+      throw e;
+    }
     const sc = r.headers.get("set-cookie");
     if (sc) this.cookie = sc.split(";")[0];
     return { status: r.status, json: await r.json().catch(() => null) };
