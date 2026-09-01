@@ -1,0 +1,30 @@
+# secrets — NEVER commit these. contracts/.env holds the deployer private key.
+.env
+.env.*
+!.env.example
+contracts/.env
+data/auth-secret.json
+
+# runtime state (lives on the railway volume, not in git)
+data/*.json
+data/*.tmp
+data/.lock
+
+# dependencies
+node_modules/
+
+# next.js build output
+.next/
+out/
+
+# foundry: build artifacts + git-cloned libraries (reinstall with the commands in README)
+contracts/out/
+contracts/cache/
+contracts/broadcast/
+contracts/lib/
+
+# misc
+npm-debug.log*
+*.log
+.DS_Store
+Thumbs.db

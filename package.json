@@ -1,0 +1,27 @@
+{
+  "name": "mochi",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "agent": "node agent/index.js",
+    "up": "node scripts/up.mjs",
+    "selftest": "node scripts/selftest.mjs",
+    "model": "node scripts/make-mochi-model.mjs"
+  },
+  "dependencies": {
+    "@anthropic-ai/sdk": "latest",
+    "@pixiv/three-vrm": "^3.5.5",
+    "next": "^15.1.6",
+    "pixi-live2d-display": "^0.4.0",
+    "pixi.js": "^6.5.10",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0",
+    "sharp": "^0.35.4",
+    "three": "^0.185.1",
+    "viem": "^2.56.1"
+  }
+}
