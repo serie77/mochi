@@ -31,7 +31,8 @@ function Dashboard() {
   const me = s?.me;
   const signed = !!me?.address;
   const [tab, setTab] = useState(() => (TABS.includes(params.get("tab")) ? params.get("tab") : "vault"));
-  const state = useJson("/api/state", 15000);
+  const rawState = useJson("/api/state", 15000);
+  const state = rawState?.ok ? rawState : null;
   const shop = useJson("/api/shop", 0);
   const vote = useJson("/api/vote", 15000);
   const act = useJson("/api/activity", 15000);

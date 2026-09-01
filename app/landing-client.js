@@ -1,32 +1,28 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useJson, fmt, Countdown, useCountdown, LookSwatches, LookBadges, StatusPill } from "./ui.js";
+import { useJson, fmt, Countdown, useCountdown, LookSwatches, LookBadges } from "./ui.js";
 import VrmStage from "./character-vrm.js";
 
 const MODEL_URL = process.env.NEXT_PUBLIC_CHARACTER_MODEL || "/mochi.vrm";
 
-export function NavStatus() {
-  const s = useJson("/api/state", 30000);
-  return <StatusPill mode={s?.mode || "prelaunch"} />;
-}
-
 export function HeroMeta() {
-  const s = useJson("/api/state", 15000);
+  const raw = useJson("/api/state", 15000);
+  const s = raw?.ok ? raw : null;
   const v = s?.vault;
   return (
     <div className="hero-meta">
       <div>
         <span className="label">vault tvl</span>
-        <strong className="mono">{v ? fmt.usd(v.tvl) : "–"}</strong>
+        <strong className="mono">{v ? fmt.usd(v.tvl) : s ? "open" : "…"}</strong>
       </div>
       <div>
         <span className="label">apy (7d, net)</span>
-        <strong className="mono">{v?.apy != null ? v.apy.toFixed(2) + "%" : "–"}</strong>
+        <strong className="mono">{v?.apy != null ? v.apy.toFixed(2) + "%" : s ? "tracking" : "…"}</strong>
       </div>
       <div>
         <span className="label">epoch</span>
-        <strong className="mono">{s ? String(s.epoch).padStart(3, "0") : "–"}</strong>
+        <strong className="mono">{s?.epoch != null ? String(s.epoch).padStart(3, "0") : "…"}</strong>
       </div>
       <div>
         <span className="label">she changes in</span>
@@ -37,17 +33,29 @@ export function HeroMeta() {
 }
 
 export function HeroStage() {
-  const s = useJson("/api/state", 20000);
+  const raw = useJson("/api/state", 20000);
+  const s = raw?.ok ? raw : null;
   const [ready, setReady] = useState(false);
   const [signal, setSignal] = useState(null);
+  const [big, setBig] = useState(false);
   const isVrm = MODEL_URL.toLowerCase().endsWith(".vrm");
   const look = s?.look;
   useEffect(() => {
     if (ready) setTimeout(() => setSignal({ t: Date.now(), kind: "greet" }), 600);
   }, [ready]);
+  useEffect(() => {
+    if (!big) return;
+    const onKey = (e) => e.key === "Escape" && setBig(false);
+    window.addEventListener("keydown", onKey);
+    document.body.style.overflow = "hidden";
+    return () => {
+      window.removeEventListener("keydown", onKey);
+      document.body.style.overflow = "";
+    };
+  }, [big]);
   return (
     <div className="hero-stage">
-      <div className="stage-card">
+      <div className="stage-card zoomable" onClick={() => setBig(true)} role="button" tabIndex={0} onKeyDown={(e) => e.key === "Enter" && setBig(true)} title="view the full model">
         <div className="stage-grid" aria-hidden="true" />
         {isVrm && (
           <VrmStage url={look?.model || MODEL_URL} mode="hero" custom={look || {}} signal={signal} onReady={() => setReady(true)} />
@@ -55,9 +63,7 @@ export function HeroStage() {
         <div className={"stage-poster" + (ready ? " off" : "")} aria-hidden={ready}>
           <img src="/hero.png" alt="mochi" />
         </div>
-        <span className="stage-tag pill pill-status is-live" style={{ borderColor: "rgba(255,95,174,.5)", color: "var(--pink-bright)", background: "var(--pink-wash)" }}>
-          live · robinhood chain
-        </span>
+        <span className="stage-zoom" aria-hidden="true">click for full view</span>
         <div className="stage-caption">
           <div>
             <div className="name">{look?.name || "rose plum"}</div>
@@ -71,6 +77,15 @@ export function HeroStage() {
           </span>
         </div>
       </div>
+      {big && (
+        <div className="stage-modal" onClick={() => setBig(false)} role="dialog" aria-modal="true">
+          <div className="stage-modal-card" onClick={(e) => e.stopPropagation()}>
+            {isVrm && <VrmStage url={look?.model || MODEL_URL} mode="full" custom={look || {}} />}
+            <button className="stage-modal-x" onClick={() => setBig(false)} aria-label="close">×</button>
+            <div className="stage-modal-cap">{look?.name || "rose plum"}</div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
@@ -78,7 +93,8 @@ export function HeroStage() {
 const ACTION_LABEL = { epoch: "ribbons", buy: "bought", gift: "gift", escrow: "released" };
 
 export function LiveTerminal() {
-  const s = useJson("/api/state", 15000);
+  const raw = useJson("/api/state", 15000);
+  const s = raw?.ok ? raw : null;
   const act = useJson("/api/activity", 15000);
   const feed = useJson("/api/feed", 20000);
   const [tab, setTab] = useState("ledger");
@@ -104,7 +120,7 @@ export function LiveTerminal() {
         </div>
         <div className="term-stats">
           <div className="term-stat"><div className="l">vault tvl</div><div className="v">{s?.vault ? fmt.usd(s.vault.tvl) : "–"}</div><div className="d">{s?.vault ? "usdg, routed to spark" : "deploys at launch"}</div></div>
-          <div className="term-stat"><div className="l">apy (7d, net)</div><div className="v">{s?.vault?.apy != null ? s.vault.apy.toFixed(2) + "%" : "–"}</div><div className="d">{s?.vault ? `mUSD $${s.vault.pricePerShare.toFixed(4)}` : "real, not emitted"}</div></div>
+          <div className="term-stat"><div className="l">apy (7d, net)</div><div className="v">{s?.vault?.apy != null ? s.vault.apy.toFixed(2) + "%" : s?.vault ? "tracking" : "–"}</div><div className="d">{s?.vault ? `mUSD $${s.vault.pricePerShare.toFixed(4)}` : "real, not emitted"}</div></div>
           <div className="term-stat"><div className="l">epoch</div><div className="v">{s ? String(s.epoch).padStart(3, "0") : "–"}</div><div className="d">{s ? `${s.epochHours}h cadence` : ""}</div></div>
           <div className="term-stat"><div className="l">ribbons minted</div><div className="v">{s ? fmt.n(s.totals?.minted) : "–"}</div><div className="d">{s ? `${fmt.n(s.totals?.wallets)} wallets hold some` : ""}</div></div>
         </div>

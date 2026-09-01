@@ -33,7 +33,7 @@ export const fmt = {
     if (v >= 1e9) return "$" + (v / 1e9).toFixed(2) + "b";
     if (v >= 1e6) return "$" + (v / 1e6).toFixed(2) + "m";
     if (v >= 1e3) return "$" + (v / 1e3).toFixed(1) + "k";
-    return "$" + Number(v).toFixed(v < 0.01 ? 6 : 2);
+    return "$" + Number(v).toFixed(v > 0 && v < 0.01 ? 6 : 2);
   },
   pct: (v, d = 1) => (v == null ? "–" : (v >= 0 ? "+" : "") + Number(v).toFixed(d) + "%"),
   ago: (t) => {

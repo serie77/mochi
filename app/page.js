@@ -1,10 +1,8 @@
 import { cfg } from "../lib/store.js";
 import { CopyPlate } from "./ui.js";
-import { NavStatus, HeroMeta, HeroStage, LiveTerminal, TokenTiles, VoicePosts, BuyLink } from "./landing-client.js";
+import { HeroMeta, HeroStage, LiveTerminal, TokenTiles, VoicePosts, BuyLink } from "./landing-client.js";
 
 export const dynamic = "force-dynamic";
-
-const MARQUEE = ["Robinhood Chain", "Spark", "USDG", "Pons", "Uniswap", "Blockscout", "DexScreener", "MetaMask"];
 
 export default function Home() {
   const c = cfg();
@@ -19,7 +17,6 @@ export default function Home() {
             <a href="/" className="brand">
               <img src="/logo.png" alt="" />
               <span className="wordmark">mochi</span>
-              <NavStatus />
             </a>
             <nav className="nav-menu" aria-label="primary">
               <a href="#vault">the vault</a>
@@ -60,17 +57,6 @@ export default function Home() {
             <HeroStage />
           </div>
         </section>
-
-        <div className="marquee" aria-hidden="true">
-          <div className="marquee-inner">
-            <span className="marquee-label">runs on</span>
-            <div className="marquee-viewport">
-              <div className="marquee-track">
-                {[...MARQUEE, ...MARQUEE].map((m, i) => <span className="marquee-item" key={i}>{m}</span>)}
-              </div>
-            </div>
-          </div>
-        </div>
 
         <section className="container">
           <LiveTerminal />
