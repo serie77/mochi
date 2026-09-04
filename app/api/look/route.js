@@ -8,7 +8,7 @@ export const dynamic = "force-dynamic";
 export async function GET(req) {
   const w = addr(new URL(req.url).searchParams.get("wallet"));
   if (!w) return Response.json({ ok: true, look: (await protocol()).look, own: false });
-  const items = (await readJson("customs.json", {}))[w];
+  const items = (await readJson("customs.json", {}))[w.toLowerCase()];
   if (!items?.length) return Response.json({ ok: true, look: (await protocol()).look, own: false });
   return Response.json({ ok: true, look: { ...lookFromItems(items), name: "your look" }, own: true });
 }

@@ -20,7 +20,7 @@ export async function POST(req) {
   const toAddr = addr(to);
   const toHandle = !toAddr && /^@?[A-Za-z0-9_]{1,15}$/.test(to) ? normHandle(to) : null;
   if (!toAddr && !toHandle) return Response.json({ ok: false, error: "send to a 0x wallet address" }, { status: 400 });
-  if (toAddr === a) return Response.json({ ok: false, error: "that is you" }, { status: 400 });
+  if (toAddr && toAddr.toLowerCase() === a) return Response.json({ ok: false, error: "that is you" }, { status: 400 });
 
   try {
     const r = await mutate(async (s, touch) => {

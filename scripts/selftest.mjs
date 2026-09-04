@@ -48,7 +48,7 @@ class Client {
     const v = await this.req("/api/auth/verify", { address: this.account.address, signature });
     ok(v.json?.ok && this.cookie.startsWith("mochi_session="), `${this.name}: signature verified, cookie set`);
     const me = await this.req("/api/me");
-    eq(me.json?.address, this.account.address, `${this.name}: /api/me knows the wallet`);
+    eq(me.json?.address, this.account.address.toLowerCase(), `${this.name}: /api/me knows the wallet`);
     return me.json;
   }
 }
@@ -124,7 +124,7 @@ console.log("\n== epoch (pre-launch: voters get ribbons, winner is worn)");
   const feed = (await a.req("/api/feed")).json;
   ok(feed.entries[0]?.kind === "epochPrelaunch", "epoch report posted to the feed");
   const act = (await a.req("/api/activity")).json;
-  ok(act.rows.some((r) => r.action === "epoch" && r.wallet === a.account.address), "ledger activity shows the mint");
+  ok(act.rows.some((r) => r.action === "epoch" && r.wallet === a.account.address.toLowerCase()), "ledger activity shows the mint");
 }
 
 console.log("\n== shop + equip");
