@@ -178,8 +178,9 @@ code, .mono { font-family: var(--mono); }
   linear-gradient(180deg, #170b1e 0%, #0b0610 100%); box-shadow: 0 40px 100px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.06); }
 .stage-card .charfull { position: absolute; inset: 0; height: 100%; }
 .stage-card .charfull canvas { width: 100% !important; height: 100% !important; }
-.stage-poster { position: absolute; inset: 0; display: flex; align-items: flex-end; justify-content: center; transition: opacity 0.9s ease; pointer-events: none; }
-.stage-poster img { height: 92%; width: auto; filter: drop-shadow(0 24px 60px rgba(255, 95, 174, 0.25)); animation: float 6s ease-in-out infinite; }
+/* a still of the exact hero framing, so the live model fades in without a jump */
+.stage-poster { position: absolute; inset: 0; transition: opacity 0.9s ease; pointer-events: none; }
+.stage-poster img { width: 100%; height: 100%; object-fit: cover; }
 .stage-poster.off { opacity: 0; }
 @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
 .stage-grid { position: absolute; inset: 0; pointer-events: none; background-image: linear-gradient(rgba(255, 255, 255, 0.05) 1px, transparent 1px), linear-gradient(90deg, rgba(255, 255, 255, 0.05) 1px, transparent 1px); background-size: 48px 48px; mask-image: radial-gradient(70% 70% at 50% 50%, #000, transparent 100%); }

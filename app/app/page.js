@@ -79,7 +79,7 @@ function Dashboard() {
             <div className="stage-caption">
               <div>
                 <div className="name">{preview ? "previewing" : showingMine ? "your look" : state?.look?.name || "rose plum"}</div>
-                <div className="meta">{preview ? "hover off to return" : showingMine ? "equipped from your wardrobe" : state?.look?.epoch ? `won epoch ${state.look.epoch} · ${fmt.n(state.look.voters)} votes` : "her original look"}</div>
+                <div className="meta">{preview ? "hover off to return" : showingMine ? "equipped from your wardrobe" : state?.look?.epoch ? `won epoch ${state.look.epoch} · ${fmt.n(state.look.voters)} ${state.look.voters === 1 ? "vote" : "votes"}` : "her original look"}</div>
               </div>
               <span>
                 <LookSwatches hues={lookCfg?.hues} />

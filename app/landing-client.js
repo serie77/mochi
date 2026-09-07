@@ -61,14 +61,14 @@ export function HeroStage() {
           <VrmStage url={look?.model || MODEL_URL} mode="hero" custom={look || {}} signal={signal} onReady={() => setReady(true)} />
         )}
         <div className={"stage-poster" + (ready ? " off" : "")} aria-hidden={ready}>
-          <img src="/hero.png" alt="mochi" />
+          <img src="/hero-poster.png" alt="mochi" />
         </div>
         <span className="stage-zoom" aria-hidden="true">click for full view</span>
         <div className="stage-caption">
           <div>
             <div className="name">{look?.name || "rose plum"}</div>
             <div className="meta">
-              {look?.epoch ? `epoch ${look.epoch} · ${fmt.n(look.voters)} votes` : "her original look · epoch 1 ballot is open"}
+              {look?.epoch ? `epoch ${look.epoch} · ${fmt.n(look.voters)} ${look.voters === 1 ? "vote" : "votes"}` : "her original look · epoch 1 ballot is open"}
             </div>
           </div>
           <span>
