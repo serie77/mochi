@@ -348,6 +348,13 @@ code, .mono { font-family: var(--mono); }
 .footer-ca { font-family: var(--mono); font-size: 11.5px; color: var(--ink-65); overflow-wrap: anywhere; }
 .footer-ca b { color: var(--ink-40); font-weight: 500; letter-spacing: 0.1em; margin-right: 8px; }
 .footer-bottom { display: flex; justify-content: space-between; gap: 16px; flex-wrap: wrap; margin-top: 36px; padding-top: 22px; border-top: 1px solid var(--line); font-size: 12.5px; color: var(--ink-40); }
+.builton { display: inline-flex; align-items: center; gap: 11px; margin-top: 28px; opacity: 0.55; transition: opacity 0.2s ease; }
+.builton:hover { opacity: 0.95; }
+.builton span { font-family: var(--mono); font-size: 10px; letter-spacing: 0.18em; text-transform: uppercase; color: var(--ink-40); }
+.builton img { height: 17px; width: auto; display: inline-block; }
+.closing .builton { display: flex; width: max-content; margin: 30px auto 0; }
+.builton.left { margin-top: 22px; }
+.builton.left img { height: 15px; }
 @media (max-width: 900px) { .footer-grid { grid-template-columns: 1fr 1fr; } }
 
 /* ---------- wallet picker ---------- */

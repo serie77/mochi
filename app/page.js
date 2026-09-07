@@ -287,6 +287,10 @@ export default function Home() {
               dress her. the next epoch closes on the clock either way.
             </p>
             <a className="btn" href="/app">open the app</a>
+            <a className="builton" href="https://robinhood.com/chain" target="_blank" rel="noopener noreferrer">
+              <span>built on</span>
+              <img src="/robinhood-chain.svg" alt="Robinhood Chain" />
+            </a>
           </div>
         </section>
 
@@ -300,6 +304,10 @@ export default function Home() {
                   mUSD, and a mascot the holders dress every epoch.
                 </p>
                 <div className="footer-ca"><b>$MOCHI</b>{c.tokenCa || "not launched yet"}</div>
+                <a className="builton left" href="https://robinhood.com/chain" target="_blank" rel="noopener noreferrer">
+                  <span>built on</span>
+                  <img src="/robinhood-chain.svg" alt="Robinhood Chain" />
+                </a>
               </div>
               <div>
                 <h4>app</h4>
