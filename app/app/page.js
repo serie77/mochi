@@ -464,6 +464,7 @@ function ItemChip({ it }) {
 function Wardrobe({ me, shop, s, signed, react }) {
   const [busy, setBusy] = useState(null);
   const [msg, setMsg] = useState(null);
+  const [shake, setShake] = useState(null);
   const items = shop?.items || [];
   const slots = shop?.slots || [];
   const owned = new Set(me?.inventory || []);
@@ -481,15 +482,20 @@ function Wardrobe({ me, shop, s, signed, react }) {
       await s.refresh();
     } catch (e) { setMsg({ err: e.message }); } finally { setBusy(null); }
   };
+  const buyShake = (it) => {
+    setShake(it.id);
+    setTimeout(() => setShake((x) => (x === it.id ? null : x)), 500);
+  };
   const buy = async (it) => {
     if (!signed) return;
+    if ((me?.ribbons || 0) < it.price) { buyShake(it); setMsg({ err: `not enough ribbons for ${it.name}.` }); return; }
     setBusy(it.id); setMsg(null);
     try {
       await api("/api/shop", { itemId: it.id });
       react?.("jump");
       await s.refresh();
       setMsg({ ok: `${it.name} is yours. tap it again to wear it.` });
-    } catch (e) { setMsg({ err: e.message }); } finally { setBusy(null); }
+    } catch (e) { buyShake(it); setMsg({ err: e.message }); } finally { setBusy(null); }
   };
 
   return (
@@ -508,7 +514,7 @@ function Wardrobe({ me, shop, s, signed, react }) {
               return (
                 <button
                   key={it.id}
-                  className={"item" + (on ? " is-on" : "")}
+                  className={"item" + (on ? " is-on" : "") + (shake === it.id ? " shake" : "")}
                   disabled={!signed || busy === it.id}
                   onClick={() => (own ? equip(it) : buy(it))}
                   title={own ? (on ? "wearing" : "wear it") : `buy for ${it.price} ribbons`}
@@ -580,6 +586,7 @@ function Ballot({ me, vote, state, s, signed, setPreview, react }) {
 /* ---------- gifts ---------- */
 
 function Gifts({ me, shop, state, s, signed }) {
+  const ep = useJson("/api/epochs", 20000);
   const [kind, setKind] = useState("ribbons");
   const [to, setTo] = useState("");
   const [amount, setAmount] = useState("");

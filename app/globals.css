@@ -395,6 +395,8 @@ code, .mono { font-family: var(--mono); }
 .dash-body { display: grid; grid-template-columns: minmax(300px, 0.85fr) minmax(0, 1.3fr) 300px; min-height: 0; height: 100%; }
 .dash-stage { position: relative; border-right: 1px solid var(--line); min-height: 0; background: radial-gradient(70% 60% at 50% 100%, rgba(255, 95, 174, 0.16), transparent 70%); }
 .dash-stage .charfull { position: absolute; inset: 0; height: 100%; }
+.dash-stage .charfull.grabbing { cursor: grabbing !important; }
+.dash-stage .charfull.grabbing canvas { cursor: grabbing !important; }
 .dash-stage .charfull canvas { width: 100% !important; height: 100% !important; }
 .dash-stage .stage-caption { bottom: 16px; }
 .dash-stage .charbubble { top: auto; bottom: 96px; }
@@ -421,6 +423,8 @@ code, .mono { font-family: var(--mono); }
 .slot-head span { font-family: var(--mono); font-size: 11px; color: var(--ink-40); }
 .items { display: grid; grid-template-columns: repeat(auto-fill, minmax(118px, 1fr)); gap: 8px; }
 .item { position: relative; text-align: left; padding: 10px; border-radius: 12px; border: 1px solid var(--line); background: var(--surface); display: grid; gap: 6px; transition: border-color 0.15s ease, background 0.15s ease; }
+.item.shake { animation: itemshake 0.45s cubic-bezier(.36,.07,.19,.97); border-color: rgba(255,80,80,.6); }
+@keyframes itemshake { 10%,90%{transform:translateX(-2px)} 20%,80%{transform:translateX(3px)} 30%,50%,70%{transform:translateX(-5px)} 40%,60%{transform:translateX(5px)} }
 .item:hover { border-color: var(--line-strong); background: var(--surface-2); }
 .item.is-on { border-color: var(--pink); box-shadow: 0 0 0 1px var(--pink) inset; }
 .item .sw { width: 100%; height: 34px; border-radius: 8px; border: 1px solid rgba(255, 255, 255, 0.12); }

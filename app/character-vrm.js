@@ -363,7 +363,21 @@ function applyHeadwear(THREE, vrm, holder, meshes) {
   const head = vrm.humanoid?.getNormalizedBoneNode("head");
   if (!head) return;
   const group = new THREE.Group();
-  for (const id of ids) group.add(buildAccessory(THREE, id));
+  for (const id of ids) {
+    const acc = buildAccessory(THREE, id);
+    // the hair is a transparent shell; three draws it in the transparent pass and it would
+    // cover any opaque piece sitting on the scalp. move head-worn pieces into the transparent
+    // pass too, with a higher renderOrder so they draw after the hair (depthTest still on, so
+    // they're correctly hidden by the head when she's turned around). glasses sit on the face.
+    if (id !== "glasses") {
+      acc.traverse((o) => {
+        if (!o.isMesh) return;
+        o.renderOrder = 20;
+        for (const m of Array.isArray(o.material) ? o.material : [o.material]) if (m) m.transparent = true;
+      });
+    }
+    group.add(acc);
+  }
   head.add(group);
   holder.group = group;
 }
@@ -375,6 +389,7 @@ export default function VrmStage({ url, signal, onProgress, onReady, mode = "sta
   const clockRef = useRef(null);
   const waveRef = useRef(0);
   const actRef = useRef(null);
+  const userYawRef = useRef(() => 0);
   const matGroups = useRef(new Map());
   const origMaps = useRef(new Map());
   const baseHues = useRef({});
@@ -406,8 +421,9 @@ export default function VrmStage({ url, signal, onProgress, onReady, mode = "sta
         const full = mode === "full";
         const camera = new THREE.PerspectiveCamera(30, el.clientWidth / el.clientHeight, 0.1, 20);
         if (full) {
-          camera.position.set(0, 0.98, 2.95);
-          camera.lookAt(0, 0.84, 0);
+          // whole body, feet included, with headroom; drag rotates her (see below)
+          camera.position.set(0, 0.98, 3.75);
+          camera.lookAt(0, 0.9, 0);
         } else if (mode === "hero") {
           // three-quarter framing: head to hips, room for the outfit to read
           camera.position.set(0, 1.12, 1.88);
@@ -483,6 +499,28 @@ export default function VrmStage({ url, signal, onProgress, onReady, mode = "sta
         window.addEventListener("pointermove", onPointer);
         cleanupFns.push(() => window.removeEventListener("pointermove", onPointer));
 
+        // drag to spin her around (full dressing-room view only)
+        let userYaw = 0;
+        userYawRef.current = () => userYaw;
+        if (full) {
+          let dragging = false, lastX = 0;
+          const down = (e) => { dragging = true; lastX = e.clientX; el.setPointerCapture?.(e.pointerId); el.classList.add("grabbing"); };
+          const move = (e) => { if (!dragging) return; userYaw += (e.clientX - lastX) * 0.01; lastX = e.clientX; };
+          const up = (e) => { dragging = false; el.releasePointerCapture?.(e.pointerId); el.classList.remove("grabbing"); };
+          el.addEventListener("pointerdown", down);
+          el.addEventListener("pointermove", move);
+          el.addEventListener("pointerup", up);
+          el.addEventListener("pointercancel", up);
+          el.style.cursor = "grab";
+          el.style.touchAction = "pan-y";
+          cleanupFns.push(() => {
+            el.removeEventListener("pointerdown", down);
+            el.removeEventListener("pointermove", move);
+            el.removeEventListener("pointerup", up);
+            el.removeEventListener("pointercancel", up);
+          });
+        }
+
         const onResize = () => {
           renderer.setSize(el.clientWidth, el.clientHeight);
           camera.aspect = el.clientWidth / el.clientHeight;
@@ -529,6 +567,9 @@ export default function VrmStage({ url, signal, onProgress, onReady, mode = "sta
             rUpper.rotation.z = 1.38;
             rLower.rotation.z = 0;
           }
+          // drag-to-rotate baseline (full view); animations add on top of it
+          const yaw = baseSceneY + userYawRef.current();
+          vrm.scene.rotation.y = yaw;
           // one-shot action animations (bow / spin / jump / cheer / nod)
           const act = actRef.current;
           if (act && t < act.until) {
@@ -539,7 +580,7 @@ export default function VrmStage({ url, signal, onProgress, onReady, mode = "sta
               if (chest) chest.rotation.x += env * 0.42;
               if (head) head.rotation.x += env * 0.22;
             } else if (act.kind === "spin") {
-              vrm.scene.rotation.y = baseSceneY + ease(p) * Math.PI * 2;
+              vrm.scene.rotation.y = yaw + ease(p) * Math.PI * 2;
             } else if (act.kind === "jump") {
               vrm.scene.position.y = baseScenePos + Math.abs(Math.sin(p * Math.PI * 2)) * 0.05;
             } else if (act.kind === "cheer") {
@@ -554,7 +595,6 @@ export default function VrmStage({ url, signal, onProgress, onReady, mode = "sta
           } else if (acting) {
             acting = false;
             actRef.current = null;
-            vrm.scene.rotation.y = baseSceneY;
             vrm.scene.position.y = baseScenePos;
             if (rUpper) rUpper.rotation.z = 1.38;
             if (lUpper) lUpper.rotation.z = -1.38;
