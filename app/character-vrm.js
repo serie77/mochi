@@ -243,6 +243,112 @@ function buildAccessory(THREE, id) {
       horn.rotation.z = -side * 0.55;
       g.add(horn);
     }
+  } else if (id === "star-pin") {
+    const shape = new THREE.Shape();
+    for (let i = 0; i < 10; i++) {
+      const r = i % 2 === 0 ? 0.034 : 0.015;
+      const a = (i / 10) * Math.PI * 2 - Math.PI / 2;
+      const x = Math.cos(a) * r, y = Math.sin(a) * r;
+      i === 0 ? shape.moveTo(x, y) : shape.lineTo(x, y);
+    }
+    shape.closePath();
+    const star = new THREE.Mesh(
+      new THREE.ExtrudeGeometry(shape, { depth: 0.007, bevelEnabled: false }),
+      accMaterial(THREE, 0xffd75e, { emissive: 0xdda92e, emissiveIntensity: 0.35, roughness: 0.35, metalness: 0.7 })
+    );
+    star.position.set(0.075, 0.1, 0.065);
+    star.rotation.y = 0.6;
+    star.rotation.z = 0.2;
+    g.add(star);
+  } else if (id === "hairpin") {
+    const gold = accMaterial(THREE, 0xffd75e, { emissive: 0xdda92e, emissiveIntensity: 0.35, roughness: 0.35, metalness: 0.7 });
+    for (const tilt of [0.55, -0.55]) {
+      const bar = new THREE.Mesh(new THREE.BoxGeometry(0.075, 0.009, 0.004), gold);
+      bar.position.set(-0.078, 0.075, 0.07);
+      bar.rotation.set(0, -0.6, tilt);
+      g.add(bar);
+    }
+  } else if (id === "bow") {
+    const pink = accMaterial(THREE, 0xff5fae, { roughness: 0.6 });
+    const deep = accMaterial(THREE, 0xd13c88, { roughness: 0.6 });
+    const knot = new THREE.Mesh(new THREE.SphereGeometry(0.015, 16, 12), deep);
+    for (const side of [-1, 1]) {
+      const loop = new THREE.Mesh(new THREE.ConeGeometry(0.03, 0.062, 18), pink);
+      loop.position.set(side * 0.038, 0.004, 0);
+      loop.rotation.z = side * Math.PI / 2;
+      loop.scale.z = 0.5;
+      const tail = new THREE.Mesh(new THREE.BoxGeometry(0.013, 0.048, 0.003), pink);
+      tail.position.set(side * 0.018, -0.032, 0.002);
+      tail.rotation.z = -side * 0.35;
+      g.add(loop, tail);
+    }
+    g.add(knot);
+    g.position.set(0.06, 0.168, 0.012);
+    g.rotation.z = -0.25;
+    g.rotation.x = -0.25;
+  } else if (id === "flower") {
+    const petal = accMaterial(THREE, 0xfff4fa, { roughness: 0.7 });
+    const heart = accMaterial(THREE, 0xffd75e, { roughness: 0.5, metalness: 0.3 });
+    const f = new THREE.Group();
+    for (let i = 0; i < 6; i++) {
+      const a = (i / 6) * Math.PI * 2;
+      const p = new THREE.Mesh(new THREE.SphereGeometry(0.016, 14, 10), petal);
+      p.position.set(Math.cos(a) * 0.025, Math.sin(a) * 0.025, 0);
+      p.scale.z = 0.45;
+      f.add(p);
+    }
+    const c = new THREE.Mesh(new THREE.SphereGeometry(0.012, 14, 10), heart);
+    c.position.z = 0.004;
+    f.add(c);
+    f.position.set(-0.072, 0.135, 0.05);
+    f.rotation.y = -0.65;
+    g.add(f);
+  } else if (id === "beret") {
+    const red = accMaterial(THREE, 0xc22c48, { roughness: 0.75 });
+    const dome = new THREE.Mesh(new THREE.SphereGeometry(0.112, 28, 18), red);
+    dome.scale.y = 0.42;
+    dome.position.set(0.012, 0.168, -0.012);
+    dome.rotation.z = 0.16;
+    const stem = new THREE.Mesh(new THREE.CylinderGeometry(0.005, 0.005, 0.02, 10), red);
+    stem.position.set(0.02, 0.215, -0.012);
+    stem.rotation.z = 0.16;
+    g.add(dome, stem);
+  } else if (id === "bunny-ears") {
+    const white = accMaterial(THREE, 0xfdf6f9, { roughness: 0.8 });
+    const inner = accMaterial(THREE, 0xff9ccc, { roughness: 0.8 });
+    for (const side of [-1, 1]) {
+      const ear = new THREE.Mesh(new THREE.CapsuleGeometry(0.02, 0.1, 6, 16), white);
+      ear.position.set(side * 0.045, 0.235, -0.005);
+      ear.rotation.z = -side * 0.14;
+      ear.scale.z = 0.6;
+      const pad = new THREE.Mesh(new THREE.CapsuleGeometry(0.009, 0.062, 6, 12), inner);
+      pad.position.set(side * 0.0435, 0.233, 0.008);
+      pad.rotation.z = -side * 0.14;
+      pad.scale.z = 0.5;
+      g.add(ear, pad);
+    }
+  } else if (id === "crown") {
+    const gold = accMaterial(THREE, 0xffd75e, { emissive: 0xcf9b22, emissiveIntensity: 0.25, roughness: 0.35, metalness: 0.75 });
+    const band = new THREE.Mesh(new THREE.CylinderGeometry(0.062, 0.067, 0.028, 24, 1, true), gold);
+    band.material = gold.clone();
+    band.material.side = THREE.DoubleSide;
+    const c = new THREE.Group();
+    c.add(band);
+    for (let i = 0; i < 6; i++) {
+      const a = (i / 6) * Math.PI * 2;
+      const spike = new THREE.Mesh(new THREE.ConeGeometry(0.011, 0.03, 10), gold);
+      spike.position.set(Math.cos(a) * 0.062, 0.028, Math.sin(a) * 0.062);
+      c.add(spike);
+    }
+    const jewel = new THREE.Mesh(
+      new THREE.SphereGeometry(0.008, 12, 10),
+      accMaterial(THREE, 0xff5fae, { emissive: 0xff5fae, emissiveIntensity: 0.5, roughness: 0.3 })
+    );
+    jewel.position.set(0, 0.002, 0.064);
+    c.add(jewel);
+    c.position.set(0, 0.205, -0.01);
+    c.rotation.z = 0.07;
+    g.add(c);
   }
   return g;
 }

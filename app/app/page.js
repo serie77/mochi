@@ -351,7 +351,87 @@ function StakeTab({ me, state, s, signed }) {
 
 /* ---------- wardrobe ---------- */
 
-const MESH_GLYPH = { "cat-ears": "ᘚᘛ", halo: "◯", "witch-hat": "◮", glasses: "õõ", horns: "ᐱᐱ" };
+// tiny drawings of each headwear item, colored like the real 3d accessory
+const MESH_ICONS = {
+  "cat-ears": (
+    <>
+      <path d="M6 26 L10 8 L18 23 Z" fill="#c23f6c" />
+      <path d="M9.4 20.5 L11 12.5 L14.6 19 Z" fill="#ff93c9" />
+      <path d="M26 26 L22 8 L14 23 Z" fill="#c23f6c" />
+      <path d="M22.6 20.5 L21 12.5 L17.4 19 Z" fill="#ff93c9" />
+    </>
+  ),
+  halo: <ellipse cx="16" cy="16" rx="11" ry="5.5" fill="none" stroke="#ffd75e" strokeWidth="3.4" />,
+  "witch-hat": (
+    <>
+      <ellipse cx="16" cy="24" rx="13" ry="3.6" fill="#3a1f40" />
+      <path d="M17.5 4 L24 23 L8 23 Z" fill="#3a1f40" />
+      <path d="M9.7 19 L22.6 19 L23.7 22.4 L8.6 22.4 Z" fill="#ff5fae" />
+    </>
+  ),
+  glasses: (
+    <>
+      <circle cx="9.5" cy="17" r="5.6" fill="none" stroke="#b9bac9" strokeWidth="2.2" />
+      <circle cx="22.5" cy="17" r="5.6" fill="none" stroke="#b9bac9" strokeWidth="2.2" />
+      <path d="M15 16.4 L17 16.4" stroke="#b9bac9" strokeWidth="2.2" />
+    </>
+  ),
+  horns: (
+    <>
+      <path d="M6 25 Q6 10 12.5 7 Q12 17 11 25 Z" fill="#d1265c" />
+      <path d="M26 25 Q26 10 19.5 7 Q20 17 21 25 Z" fill="#d1265c" />
+    </>
+  ),
+  "star-pin": <path d="M16 4 L18.9 12.1 L27.4 12.3 L20.6 17.5 L23.1 25.7 L16 20.8 L8.9 25.7 L11.4 17.5 L4.6 12.3 L13.1 12.1 Z" fill="#ffd75e" />,
+  hairpin: (
+    <>
+      <rect x="4" y="14.4" width="24" height="3.2" rx="1.6" fill="#ffd75e" transform="rotate(24 16 16)" />
+      <rect x="4" y="14.4" width="24" height="3.2" rx="1.6" fill="#ffd75e" transform="rotate(-24 16 16)" />
+    </>
+  ),
+  bow: (
+    <>
+      <path d="M14 16 L4.5 9.5 L4.5 22.5 Z" fill="#ff5fae" />
+      <path d="M18 16 L27.5 9.5 L27.5 22.5 Z" fill="#ff5fae" />
+      <circle cx="16" cy="16" r="3.4" fill="#d13c88" />
+    </>
+  ),
+  flower: (
+    <>
+      {[0, 60, 120, 180, 240, 300].map((a) => (
+        <circle key={a} cx={16 + 7.2 * Math.cos((a * Math.PI) / 180)} cy={16 + 7.2 * Math.sin((a * Math.PI) / 180)} r="4.6" fill="#fff4fa" />
+      ))}
+      <circle cx="16" cy="16" r="3.6" fill="#ffd75e" />
+    </>
+  ),
+  beret: (
+    <>
+      <path d="M4.5 20 Q16 5 27.5 20 Q16 26 4.5 20 Z" fill="#c22c48" />
+      <rect x="15" y="6" width="2" height="3.6" rx="1" fill="#c22c48" />
+    </>
+  ),
+  "bunny-ears": (
+    <>
+      <rect x="7" y="4" width="7" height="21" rx="3.5" fill="#fdf6f9" transform="rotate(-6 10.5 14)" />
+      <rect x="9.6" y="8" width="2.8" height="12" rx="1.4" fill="#ff9ccc" transform="rotate(-6 10.5 14)" />
+      <rect x="18" y="4" width="7" height="21" rx="3.5" fill="#fdf6f9" transform="rotate(6 21.5 14)" />
+      <rect x="19.6" y="8" width="2.8" height="12" rx="1.4" fill="#ff9ccc" transform="rotate(6 21.5 14)" />
+    </>
+  ),
+  crown: (
+    <>
+      <path d="M6 25 L5 11 L11.5 16.5 L16 8 L20.5 16.5 L27 11 L26 25 Z" fill="#ffd75e" />
+      <circle cx="16" cy="21" r="2.2" fill="#ff5fae" />
+    </>
+  ),
+};
+
+const MeshIcon = ({ mesh }) =>
+  MESH_ICONS[mesh] ? (
+    <svg viewBox="0 0 32 32" width="70%" height="70%" aria-hidden="true">{MESH_ICONS[mesh]}</svg>
+  ) : (
+    "✦"
+  );
 
 function ItemChip({ it }) {
   if (it.kind === "pattern") {
@@ -366,7 +446,7 @@ function ItemChip({ it }) {
   }
   if (it.kind === "mesh") {
     if (it.base) return <span className="sw orig" />;
-    return <span className="sw mesh">{MESH_GLYPH[it.mesh] || "✦"}</span>;
+    return <span className="sw mesh"><MeshIcon mesh={it.mesh} /></span>;
   }
   if (it.kind === "model") {
     if (it.base) return <span className="sw orig" />;
