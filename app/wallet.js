@@ -124,10 +124,26 @@ export function SessionProvider({ children }) {
     setMe({ address: null });
   };
 
+  // ask the wallet to show its own account picker, then sign in as whatever was chosen.
+  // wallets that don't support wallet_requestPermissions just re-run a normal sign-in.
+  const switchAccount = async () => {
+    setErr(null);
+    const p = activeRef.current || (wallets.length === 1 ? wallets[0].provider : null);
+    if (!p) return signIn();
+    await signOut();
+    try {
+      await p.request({ method: "wallet_requestPermissions", params: [{ eth_accounts: {} }] });
+    } catch (e) {
+      if (e?.code === 4001) return; // they closed the picker; stay signed out
+      // unsupported method: fall through, the wallet's active account wins
+    }
+    await doSignIn(p, null);
+  };
+
   const provider = () => activeRef.current || (wallets.length === 1 ? wallets[0].provider : null) || window.ethereum || null;
 
   return (
-    <Ctx.Provider value={{ me, ready: me !== null, busy, err, signIn, signOut, refresh, provider, wallets }}>
+    <Ctx.Provider value={{ me, ready: me !== null, busy, err, signIn, signOut, switchAccount, refresh, provider, wallets }}>
       {children}
       {pickerOpen && (
         <div className="wpick" onClick={() => setPickerOpen(false)}>
@@ -163,10 +179,15 @@ export function ConnectButton({ className = "btn" }) {
   if (!s.ready) return <button className={className} disabled>…</button>;
   if (s.me?.address)
     return (
-      <button className={className + " is-addr"} onClick={s.signOut} title="sign out">
-        <i className="dot ok" />
-        {short(s.me.address)}
-      </button>
+      <span className="acct">
+        <button className={className + " is-addr"} onClick={s.signOut} title="sign out">
+          <i className="dot ok" />
+          {short(s.me.address)}
+        </button>
+        <button className={className + " is-addr acct-switch"} onClick={s.switchAccount} title="switch account" aria-label="switch account">
+          ⇄
+        </button>
+      </span>
     );
   return (
     <button className={className} onClick={s.signIn} disabled={s.busy}>

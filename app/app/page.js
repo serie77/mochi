@@ -658,7 +658,15 @@ function Ledger({ me, state, signed }) {
   const pub = act?.rows || [];
   return (
     <>
-      <p className="panel-note"><b>the ledger.</b> every ribbon in and out, straight off the record. your own history first, then everyone's.</p>
+      <p className="panel-note"><b>the ledger.</b> ribbons here, dollars on chain. your vault and staking positions live in your wallet; ribbons are her book-keeping.</p>
+      {signed && me?.vault && (
+        <div className="tiles compact" style={{ marginBottom: 22 }}>
+          <div className="tile"><div className="v">{fmt.usd(me.vault.valueUsd)}</div><div className="l">your vault deposit</div></div>
+          <div className="tile"><div className="v">{fmt.n(me.vault.staked)}</div><div className="l">$mochi staked</div></div>
+          <div className="tile"><div className="v">{fmt.usd(me.vault.claimableUsd)}</div><div className="l">claimable rewards</div></div>
+          <div className="tile"><div className="v">{fmt.n(me.ribbons)}</div><div className="l">ribbons</div></div>
+        </div>
+      )}
       {signed && (
         <div style={{ marginBottom: 22 }}>
           <div className="h3" style={{ marginBottom: 10 }}>your ribbons · balance {fmt.n(me?.ribbons)}</div>
