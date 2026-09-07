@@ -10,6 +10,12 @@ export default function Home() {
   const bot = x || "mochi";
   return (
     <>
+      {/* section links scroll without writing #fragments into the url */}
+      <script
+        dangerouslySetInnerHTML={{
+          __html: `document.addEventListener("click",function(e){var a=e.target.closest&&e.target.closest('a[href^="#"]');if(!a)return;var el=document.getElementById(a.getAttribute("href").slice(1));if(!el)return;e.preventDefault();el.scrollIntoView({behavior:"smooth",block:"start"})});`,
+        }}
+      />
       <div className="ambient" aria-hidden="true" />
       <div className="site">
         <header className="nav">
