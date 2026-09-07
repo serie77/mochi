@@ -66,7 +66,7 @@ export default function Home() {
           <div className="section-head">
             <div>
               <span className="eyebrow"><span className="num">01</span><span className="rule" />the vault</span>
-              <h2 className="h2">usdg in, mUSD out, spark in between.</h2>
+              <h2 className="h2"><span className="nowrap"><img className="usdg-mark" src="/usdg.png" alt="" aria-hidden="true" />USDG</span> in, mUSD out, spark in between.</h2>
             </div>
             <p className="caption">
               mUSD is a standard erc-4626 share. the interest comes from spark's savings vault on robinhood chain,
@@ -77,7 +77,7 @@ export default function Home() {
             <div className="step">
               <span className="n">1</span>
               <div className="h3">deposit</div>
-              <code>deposit(usdg)</code>
+              <code>deposit(USDG)</code>
               <p>put USDG in, get mUSD back at the current share price. the position is a plain token in your own wallet.</p>
             </div>
             <div className="step">
@@ -95,7 +95,7 @@ export default function Home() {
             <div className="step">
               <span className="n">4</span>
               <div className="h3">withdraw</div>
-              <code>withdraw(usdg)</code>
+              <code>withdraw(USDG)</code>
               <p>burn shares, take USDG, same block. no queue, no epoch gate, no exit fee. the limit is spark's own liquidity, shown honestly.</p>
             </div>
           </div>

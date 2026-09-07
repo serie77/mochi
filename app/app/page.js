@@ -229,7 +229,7 @@ function VaultTab({ me, state, s, signed }) {
           <form className="form card" style={{ padding: 18 }} onSubmit={deposit}>
             <div className="field">
               <label>
-                deposit usdg · you have {me.usdgBalance != null ? fmt.n(me.usdgBalance, 2) : "–"}
+                <img className="usdg-mark sm" src="/usdg.png" alt="" aria-hidden="true" />deposit USDG · you have {me.usdgBalance != null ? fmt.n(me.usdgBalance, 2) : "–"}
                 {me.usdgBalance > 0 && (
                   <button type="button" className="link" style={{ marginLeft: 8 }} onClick={() => setAmtIn(String(me.usdgBalance))}>max</button>
                 )}
@@ -242,7 +242,7 @@ function VaultTab({ me, state, s, signed }) {
           </form>
           <form className="form card" style={{ padding: 18 }} onSubmit={withdraw}>
             <div className="field">
-              <label>withdraw usdg · available {pos ? fmt.n(pos.maxWithdrawUsd, 2) : "0"}</label>
+              <label><img className="usdg-mark sm" src="/usdg.png" alt="" aria-hidden="true" />withdraw USDG · available {pos ? fmt.n(pos.maxWithdrawUsd, 2) : "0"}</label>
               <input value={amtOut} onChange={(e) => setAmtOut(e.target.value)} placeholder="100" inputMode="decimal" required />
             </div>
             <div style={{ display: "flex", gap: 12, alignItems: "center", flexWrap: "wrap" }}>
@@ -257,7 +257,7 @@ function VaultTab({ me, state, s, signed }) {
       )}
       <div className="table">
         <div className="trow hist head"><span>contract</span><span></span><span>address</span><span></span></div>
-        {[["mUSD vault", cx.vault], ["underlying", v?.underlying], ["usdg", cx.usdg]].map(([n, a]) => a && (
+        {[["mUSD vault", cx.vault], ["underlying", v?.underlying], ["USDG", cx.usdg]].map(([n, a]) => a && (
           <div className="trow hist" key={n}>
             <span>{n}</span><span></span>
             <span><a className="link" href={`${state?.chain?.explorer}/address/${a}`} target="_blank" rel="noopener noreferrer">{a}</a></span>

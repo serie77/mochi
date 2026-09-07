@@ -185,6 +185,9 @@ code, .mono { font-family: var(--mono); }
 @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
 .stage-grid { position: absolute; inset: 0; pointer-events: none; background-image: linear-gradient(rgba(255, 255, 255, 0.05) 1px, transparent 1px), linear-gradient(90deg, rgba(255, 255, 255, 0.05) 1px, transparent 1px); background-size: 48px 48px; mask-image: radial-gradient(70% 70% at 50% 50%, #000, transparent 100%); }
 .stage-tag { position: absolute; left: 16px; top: 16px; z-index: 3; }
+.nowrap { white-space: nowrap; }
+.usdg-mark { display: inline-block; width: 0.82em; height: 0.82em; vertical-align: -0.08em; margin-right: 0.28em; border-radius: 50%; }
+.usdg-mark.sm { width: 15px; height: 15px; vertical-align: -3px; margin-right: 6px; }
 .stage-card.zoomable { cursor: zoom-in; }
 .stage-zoom { position: absolute; right: 16px; top: 16px; z-index: 3; font-family: var(--mono); font-size: 10px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--ink-40); border: 1px solid var(--line); border-radius: 999px; padding: 5px 11px; background: rgba(9, 5, 12, 0.6); backdrop-filter: blur(8px); opacity: 0; transition: opacity 0.25s ease; pointer-events: none; }
 .stage-card.zoomable:hover .stage-zoom, .stage-card.zoomable:focus-visible .stage-zoom { opacity: 1; }

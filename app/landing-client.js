@@ -119,7 +119,7 @@ export function LiveTerminal() {
           </div>
         </div>
         <div className="term-stats">
-          <div className="term-stat"><div className="l">vault tvl</div><div className="v">{s?.vault ? fmt.usd(s.vault.tvl) : "–"}</div><div className="d">{s?.vault ? "usdg, routed to spark" : "deploys at launch"}</div></div>
+          <div className="term-stat"><div className="l">vault tvl</div><div className="v">{s?.vault ? fmt.usd(s.vault.tvl) : "–"}</div><div className="d">{s?.vault ? "USDG, routed to spark" : "deploys at launch"}</div></div>
           <div className="term-stat"><div className="l">apy (7d, net)</div><div className="v">{s?.vault?.apy != null ? s.vault.apy.toFixed(2) + "%" : s?.vault ? "tracking" : "–"}</div><div className="d">{s?.vault ? `mUSD $${s.vault.pricePerShare.toFixed(4)}` : "real, not emitted"}</div></div>
           <div className="term-stat"><div className="l">epoch</div><div className="v">{s ? String(s.epoch).padStart(3, "0") : "–"}</div><div className="d">{s ? `${s.epochHours}h cadence` : ""}</div></div>
           <div className="term-stat"><div className="l">ribbons minted</div><div className="v">{s ? fmt.n(s.totals?.minted) : "–"}</div><div className="d">{s ? `${fmt.n(s.totals?.wallets)} wallets hold some` : ""}</div></div>
