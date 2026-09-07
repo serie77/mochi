@@ -12,20 +12,27 @@ export async function POST(req) {
   if (!a) return unauthorized();
   const body = await req.json().catch(() => null);
   const want = Array.isArray(body?.items) ? body.items.map(String) : [];
-  const own = new Set(await inventoryOf(a));
-  const bySlot = {};
-  for (const id of want) {
-    const it = itemById(id);
-    if (!it) return Response.json({ ok: false, error: "unknown item" }, { status: 400 });
-    if (!it.base && !own.has(id)) return Response.json({ ok: false, error: "you do not own that" }, { status: 400 });
-    bySlot[it.slot] = id;
+  try {
+    const items = await withLock(async () => {
+      // ownership is checked under the same lock that gifts take items away under,
+      // so you can never end up wearing something you no longer own
+      const own = new Set(await inventoryOf(a));
+      const bySlot = {};
+      for (const id of want) {
+        const it = itemById(id);
+        if (!it) throw new Error("unknown item");
+        if (!it.base && !own.has(id)) throw new Error("you do not own that");
+        bySlot[it.slot] = id;
+      }
+      const out = SLOTS.map((s) => bySlot[s]).filter(Boolean);
+      const all = await readJson("customs.json", {});
+      if (out.length) all[a] = out;
+      else delete all[a];
+      await writeJson("customs.json", all);
+      return out;
+    });
+    return Response.json({ ok: true, equipped: items, look: lookFromItems(items) });
+  } catch (e) {
+    return Response.json({ ok: false, error: e.message }, { status: 400 });
   }
-  const items = SLOTS.map((s) => bySlot[s]).filter(Boolean);
-  await withLock(async () => {
-    const all = await readJson("customs.json", {});
-    if (items.length) all[a] = items;
-    else delete all[a];
-    await writeJson("customs.json", all);
-  });
-  return Response.json({ ok: true, equipped: items, look: lookFromItems(items) });
 }
