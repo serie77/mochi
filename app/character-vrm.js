@@ -421,9 +421,9 @@ export default function VrmStage({ url, signal, onProgress, onReady, mode = "sta
         const full = mode === "full";
         const camera = new THREE.PerspectiveCamera(30, el.clientWidth / el.clientHeight, 0.1, 20);
         if (full) {
-          // whole body, feet included, with headroom; drag rotates her (see below)
-          camera.position.set(0, 0.98, 3.75);
-          camera.lookAt(0, 0.9, 0);
+          // whole body, feet clear of the caption bar; drag rotates her (see below)
+          camera.position.set(0, 0.9, 4.1);
+          camera.lookAt(0, 0.66, 0);
         } else if (mode === "hero") {
           // three-quarter framing: head to hips, room for the outfit to read
           camera.position.set(0, 1.12, 1.88);

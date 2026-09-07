@@ -102,7 +102,7 @@ function Dashboard() {
               {tab === "wardrobe" && <Wardrobe me={me} shop={shop} s={s} signed={signed} react={react} />}
               {tab === "vote" && <Ballot me={me} vote={vote} state={state} s={s} signed={signed} setPreview={setPreview} react={react} />}
               {tab === "gifts" && <Gifts me={me} shop={shop} state={state} s={s} signed={signed} />}
-              {tab === "ledger" && <Ledger me={me} state={state} />}
+              {tab === "ledger" && <Ledger me={me} state={state} signed={signed} />}
             </div>
           </section>
 
@@ -642,6 +642,51 @@ function Gifts({ me, shop, state, s, signed }) {
               <span>{String(r.epoch).padStart(3, "0")}</span>
               <span style={{ textTransform: "capitalize" }}><LookSwatches hues={r.winner.hues} /> &nbsp;{r.winner.name}</span>
               <span>{fmt.n(r.voters)}</span><span>{fmt.n(r.holders)}</span><span className="up">+{fmt.n(r.ribbonsMinted)}</span>
+            </div>
+          ))}
+        </div>
+      </div>
+    </>
+  );
+}
+
+const LEDGER_LABEL = { epoch: "epoch reward", buy: "bought", gift: "gift", escrow: "claimed", test: "faucet" };
+
+function Ledger({ me, state, signed }) {
+  const act = useJson("/api/activity", 15000);
+  const rows = me?.history || [];
+  const pub = act?.rows || [];
+  return (
+    <>
+      <p className="panel-note"><b>the ledger.</b> every ribbon in and out, straight off the record. your own history first, then everyone's.</p>
+      {signed && (
+        <div style={{ marginBottom: 22 }}>
+          <div className="h3" style={{ marginBottom: 10 }}>your ribbons · balance {fmt.n(me?.ribbons)}</div>
+          <div className="table">
+            <div className="trow led head"><span>when</span><span>what</span><span>amount</span><span>ref</span></div>
+            {rows.length === 0 && <div className="tempty">nothing yet. earn ribbons by holding, staking, or voting at epoch close.</div>}
+            {rows.map((r, i) => (
+              <div className="trow led" key={i}>
+                <span className="t">{fmt.ago(r.t)}</span>
+                <span>{LEDGER_LABEL[r.kind] || r.kind}</span>
+                <span className={r.delta > 0 ? "up" : "down"}>{(r.delta > 0 ? "+" : "") + fmt.n(r.delta)}</span>
+                <span className="t">{typeof r.ref === "string" ? fmt.addr(r.ref) : r.ref != null ? `epoch ${r.ref}` : ""}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+      <div>
+        <div className="h3" style={{ marginBottom: 10 }}>recent activity</div>
+        <div className="table">
+          <div className="trow led head"><span>when</span><span>what</span><span>wallet</span><span>amount</span></div>
+          {pub.length === 0 && <div className="tempty">quiet. the first epoch has not closed.</div>}
+          {pub.map((r, i) => (
+            <div className="trow led" key={i}>
+              <span className="t">{fmt.ago(r.t)}</span>
+              <span>{LEDGER_LABEL[r.action] || r.action}</span>
+              <span>{fmt.addr(r.wallet)}</span>
+              <span className={r.amount > 0 ? "up" : r.amount < 0 ? "down" : ""}>{r.amount == null ? "item" : (r.amount > 0 ? "+" : "") + fmt.n(r.amount)}</span>
             </div>
           ))}
         </div>
