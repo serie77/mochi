@@ -259,14 +259,6 @@ export default function Home() {
                 </p>
               </details>
               <details>
-                <summary>is it audited?</summary>
-                <p>
-                  not yet. the honest version: it is under 400 lines of solidity on top of openzeppelin's audited erc-4626
-                  and spark's live vault, the source is verified on blockscout, and the test suite runs against a fork
-                  of the real chain. size your deposit like it's week-one defi, because it is.
-                </p>
-              </details>
-              <details>
                 <summary>what does staking $mochi pay?</summary>
                 <p>
                   the vault's fee stream, in mUSD, a claim on real USDG. no emissions, so the apy scales with vault
