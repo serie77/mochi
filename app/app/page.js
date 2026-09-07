@@ -40,6 +40,7 @@ function Dashboard() {
   const [preview, setPreview] = useState(null); // hues override while hovering a candidate
   const [wear, setWear] = useState("mine"); // mine | chain
   const [signal, setSignal] = useState(null);
+  const react = (kind) => setSignal({ t: Date.now(), kind });
   const { text: cd } = useCountdown(state?.nextEpochAt);
   const live = state?.mode === "live";
 
@@ -70,7 +71,7 @@ function Dashboard() {
         <div className="dash-body">
           <section className="dash-stage" aria-label="mochi">
             {MODEL_URL.toLowerCase().endsWith(".vrm") && (
-              <VrmStage url={lookCfg?.model || MODEL_URL} mode="full" custom={lookCfg} signal={signal} onReady={() => setSignal({ t: Date.now(), kind: "greet" })} />
+              <VrmStage url={lookCfg?.model || MODEL_URL} mode="full" custom={lookCfg} signal={signal} onReady={() => react(["greet", "bow", "spin", "jump", "cheer"][Math.floor(Math.random() * 5)])} />
             )}
             <div className="stage-tag look-toggle">
               <button className={wear === "chain" || !signed ? "on" : ""} onClick={() => setWear("chain")}>chain's look</button>
@@ -96,10 +97,10 @@ function Dashboard() {
             </div>
             <div className="panel-body">
               {!signed && <SignInCard s={s} tab={tab} />}
-              {tab === "vault" && <VaultTab me={me} state={state} s={s} signed={signed} />}
-              {tab === "stake" && <StakeTab me={me} state={state} s={s} signed={signed} />}
-              {tab === "wardrobe" && <Wardrobe me={me} shop={shop} s={s} signed={signed} />}
-              {tab === "vote" && <Ballot me={me} vote={vote} state={state} s={s} signed={signed} setPreview={setPreview} />}
+              {tab === "vault" && <VaultTab me={me} state={state} s={s} signed={signed} react={react} />}
+              {tab === "stake" && <StakeTab me={me} state={state} s={s} signed={signed} react={react} />}
+              {tab === "wardrobe" && <Wardrobe me={me} shop={shop} s={s} signed={signed} react={react} />}
+              {tab === "vote" && <Ballot me={me} vote={vote} state={state} s={s} signed={signed} setPreview={setPreview} react={react} />}
               {tab === "gifts" && <Gifts me={me} shop={shop} state={state} s={s} signed={signed} />}
               {tab === "ledger" && <Ledger me={me} state={state} />}
             </div>
@@ -147,7 +148,10 @@ function SignInCard({ s, tab }) {
 
 /* ---------- vault ---------- */
 
-function useTx(s) {
+// how she reacts when your transaction lands
+const TX_REACTION = { deposit: "bow", withdrawal: "nod", stake: "cheer", unstake: "nod", claim: "cheer" };
+
+function useTx(s, react) {
   const [busy, setBusy] = useState(false);
   const [msg, setMsg] = useState(null);
   const run = async (label, fn) => {
@@ -156,6 +160,7 @@ function useTx(s) {
     try {
       const hash = await fn();
       setMsg({ ok: `${label} confirmed`, hash });
+      react?.(TX_REACTION[label] || "nod");
       await s.refresh();
     } catch (e) {
       setMsg({ err: e?.code === 4001 ? "you cancelled it" : e?.message || `${label} failed` });
@@ -179,13 +184,13 @@ function TxNote({ msg, explorer }) {
   );
 }
 
-function VaultTab({ me, state, s, signed }) {
+function VaultTab({ me, state, s, signed, react }) {
   const v = state?.vault;
   const cx = state?.contracts;
   const pos = me?.vault;
   const [amtIn, setAmtIn] = useState("");
   const [amtOut, setAmtOut] = useState("");
-  const { busy, msg, run } = useTx(s);
+  const { busy, msg, run } = useTx(s, react);
   if (!cx?.vault)
     return (
       <div className="gate-card">
@@ -216,7 +221,7 @@ function VaultTab({ me, state, s, signed }) {
       <p className="panel-note">
         <b>the vault.</b> USDG in, mUSD out. deposits are routed into spark's savings vault on robinhood chain and
         the mUSD share price accrues the interest. withdraw whenever, nothing to claim.{" "}
-        {v?.feeBps != null && <>mochi takes {v.feeBps / 100}% of the yield (never the principal) and pays it to $MOCHI stakers.</>}
+        {v?.feeBps != null && <>mochi takes {v.feeBps / 100}% of the yield (never the principal) and pays it to $mochi stakers.</>}
       </p>
       <div className="tiles compact">
         <div className="tile"><div className="v">{v ? fmt.usd(v.tvl) : "–"}</div><div className="l">tvl</div></div>
@@ -269,19 +274,19 @@ function VaultTab({ me, state, s, signed }) {
   );
 }
 
-function StakeTab({ me, state, s, signed }) {
+function StakeTab({ me, state, s, signed, react }) {
   const v = state?.vault;
   const cx = state?.contracts;
   const pos = me?.vault;
   const [amt, setAmt] = useState("");
   const [amtOut, setAmtOut] = useState("");
-  const { busy, msg, run } = useTx(s);
+  const { busy, msg, run } = useTx(s, react);
   if (!cx?.staking)
     return (
       <div className="gate-card">
         <div className="h3">staking is not deployed yet</div>
         <p>
-          stake $MOCHI and the vault's performance fee is paid to you in mUSD: USDG from real yield, never
+          stake $mochi and the vault's performance fee is paid to you in mUSD: USDG from real yield, never
           emissions of her own token. it goes live with the token.
         </p>
       </div>
@@ -303,7 +308,7 @@ function StakeTab({ me, state, s, signed }) {
   return (
     <>
       <p className="panel-note">
-        <b>staking.</b> stake $MOCHI, earn the vault's fee stream in mUSD. rewards land continuously and claim
+        <b>staking.</b> stake $mochi, earn the vault's fee stream in mUSD. rewards land continuously and claim
         whenever, and mUSD redeems to USDG in the vault tab. no lockup: unstake any time and keep what you earned.
       </p>
       <div className="tiles compact">
@@ -342,7 +347,7 @@ function StakeTab({ me, state, s, signed }) {
         </>
       )}
       <p className="panel-note">
-        stakers also earn ribbons every epoch. staked $MOCHI counts the same as held $MOCHI for the wardrobe and
+        stakers also earn ribbons every epoch. staked $mochi counts the same as held $mochi for the wardrobe and
         the vote.
       </p>
     </>
@@ -456,7 +461,7 @@ function ItemChip({ it }) {
   return <span className="sw" style={{ background: `hsl(${it.hue} 70% 55%)` }} />;
 }
 
-function Wardrobe({ me, shop, s, signed }) {
+function Wardrobe({ me, shop, s, signed, react }) {
   const [busy, setBusy] = useState(null);
   const [msg, setMsg] = useState(null);
   const items = shop?.items || [];
@@ -472,6 +477,7 @@ function Wardrobe({ me, shop, s, signed }) {
     setBusy(it.id); setMsg(null);
     try {
       await api("/api/equip", { items: next });
+      react?.("spin");
       await s.refresh();
     } catch (e) { setMsg({ err: e.message }); } finally { setBusy(null); }
   };
@@ -480,6 +486,7 @@ function Wardrobe({ me, shop, s, signed }) {
     setBusy(it.id); setMsg(null);
     try {
       await api("/api/shop", { itemId: it.id });
+      react?.("jump");
       await s.refresh();
       setMsg({ ok: `${it.name} is yours. tap it again to wear it.` });
     } catch (e) { setMsg({ err: e.message }); } finally { setBusy(null); }
@@ -524,7 +531,7 @@ function Wardrobe({ me, shop, s, signed }) {
 
 /* ---------- ballot ---------- */
 
-function Ballot({ me, vote, state, s, signed, setPreview }) {
+function Ballot({ me, vote, state, s, signed, setPreview, react }) {
   const [busy, setBusy] = useState(false);
   const [err, setErr] = useState(null);
   const [mine, setMine] = useState(null);
@@ -538,6 +545,7 @@ function Ballot({ me, vote, state, s, signed, setPreview }) {
     try {
       const j = await api("/api/vote", { candidateId: c.id });
       setMine(j.mine);
+      react?.("cheer");
       await s.refresh();
     } catch (e) { setErr(e.message); } finally { setBusy(false); }
   };

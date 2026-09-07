@@ -41,7 +41,11 @@ export function HeroStage() {
   const isVrm = MODEL_URL.toLowerCase().endsWith(".vrm");
   const look = s?.look;
   useEffect(() => {
-    if (ready) setTimeout(() => setSignal({ t: Date.now(), kind: "greet" }), 600);
+    // a different entrance every visit: wave, bow, spin, hop, or a full cheer
+    if (!ready) return;
+    const kinds = ["greet", "bow", "spin", "jump", "cheer"];
+    const kind = kinds[Math.floor(Math.random() * kinds.length)];
+    setTimeout(() => setSignal({ t: Date.now(), kind }), 600);
   }, [ready]);
   useEffect(() => {
     if (!big) return;

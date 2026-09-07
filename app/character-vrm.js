@@ -374,6 +374,7 @@ export default function VrmStage({ url, signal, onProgress, onReady, mode = "sta
   const threeRef = useRef(null);
   const clockRef = useRef(null);
   const waveRef = useRef(0);
+  const actRef = useRef(null);
   const matGroups = useRef(new Map());
   const origMaps = useRef(new Map());
   const baseHues = useRef({});
@@ -495,9 +496,15 @@ export default function VrmStage({ url, signal, onProgress, onReady, mode = "sta
         clockRef.current = clock;
         const rUpper = vrm.humanoid?.getNormalizedBoneNode("rightUpperArm");
         const rLower = vrm.humanoid?.getNormalizedBoneNode("rightLowerArm");
+        const lUpper = vrm.humanoid?.getNormalizedBoneNode("leftUpperArm");
+        const lLower = vrm.humanoid?.getNormalizedBoneNode("leftLowerArm");
+        const baseSceneY = vrm.scene.rotation.y;
+        const baseScenePos = vrm.scene.position.y;
         let waving = false;
+        let acting = false;
         let nextBlink = 2;
         let blinkT = -1;
+        const ease = (p) => p * p * (3 - 2 * p);
         const loop = () => {
           if (dead) return;
           raf = requestAnimationFrame(loop);
@@ -521,6 +528,38 @@ export default function VrmStage({ url, signal, onProgress, onReady, mode = "sta
             waving = false;
             rUpper.rotation.z = 1.38;
             rLower.rotation.z = 0;
+          }
+          // one-shot action animations (bow / spin / jump / cheer / nod)
+          const act = actRef.current;
+          if (act && t < act.until) {
+            acting = true;
+            const p = Math.max(0, Math.min(1, 1 - (act.until - t) / act.dur));
+            const env = Math.min(1, p * 3.5) * Math.min(1, (1 - p) * 3.5); // rise, hold, settle
+            if (act.kind === "bow") {
+              if (chest) chest.rotation.x += env * 0.42;
+              if (head) head.rotation.x += env * 0.22;
+            } else if (act.kind === "spin") {
+              vrm.scene.rotation.y = baseSceneY + ease(p) * Math.PI * 2;
+            } else if (act.kind === "jump") {
+              vrm.scene.position.y = baseScenePos + Math.abs(Math.sin(p * Math.PI * 2)) * 0.05;
+            } else if (act.kind === "cheer") {
+              if (rUpper) rUpper.rotation.z = 1.38 - 2.5 * env;
+              if (lUpper) lUpper.rotation.z = -1.38 + 2.5 * env;
+              if (rLower) rLower.rotation.z = -env * 0.3;
+              if (lLower) lLower.rotation.z = env * 0.3;
+              vrm.scene.position.y = baseScenePos + Math.max(0, Math.sin(p * Math.PI * 3)) * env * 0.04;
+            } else if (act.kind === "nod") {
+              if (head) head.rotation.x += Math.sin(p * Math.PI * 3) * env * 0.3;
+            }
+          } else if (acting) {
+            acting = false;
+            actRef.current = null;
+            vrm.scene.rotation.y = baseSceneY;
+            vrm.scene.position.y = baseScenePos;
+            if (rUpper) rUpper.rotation.z = 1.38;
+            if (lUpper) lUpper.rotation.z = -1.38;
+            if (rLower) rLower.rotation.z = 0;
+            if (lLower) lLower.rotation.z = 0;
           }
           const em = vrm.expressionManager;
           if (em) {
@@ -573,10 +612,15 @@ export default function VrmStage({ url, signal, onProgress, onReady, mode = "sta
     if (signal.kind === "greet" && clockRef.current) {
       waveRef.current = clockRef.current.elapsedTime + 2.4;
     }
+    const ACT_DUR = { bow: 1.7, spin: 1.3, jump: 1.1, cheer: 2.0, nod: 1.2 };
+    if (ACT_DUR[signal.kind] && clockRef.current) {
+      const dur = ACT_DUR[signal.kind];
+      actRef.current = { kind: signal.kind, dur, until: clockRef.current.elapsedTime + dur };
+    }
     const em = vrmRef.current?.expressionManager;
     if (em) {
       const expr =
-        { win: "happy", buy: "surprised", loss: "sad", speak: "happy", greet: "happy" }[signal.kind] || "happy";
+        { win: "happy", buy: "surprised", loss: "sad", speak: "happy", greet: "happy", bow: "happy", spin: "happy", jump: "surprised", cheer: "happy", nod: "relaxed" }[signal.kind] || "happy";
       try {
         em.setValue(expr, 1);
         setTimeout(() => {

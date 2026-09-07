@@ -1,6 +1,6 @@
 import { cfg } from "../lib/store.js";
 import { CopyPlate } from "./ui.js";
-import { HeroMeta, HeroStage, LiveTerminal, TokenTiles, VoicePosts, BuyLink } from "./landing-client.js";
+import { HeroMeta, HeroStage, LiveTerminal, TokenTiles, VoicePosts } from "./landing-client.js";
 
 export const dynamic = "force-dynamic";
 
@@ -46,7 +46,7 @@ export default function Home() {
               <p className="sub hero-sub">
                 mochi is a real-value protocol with a mascot who takes her job seriously. deposit <b>USDG</b> into her
                 vault and it earns spark's savings rate. the share price does the compounding. stake{" "}
-                <b>$MOCHI</b> and her performance fee pays you in USDG, never in emissions. and every epoch, the
+                <b>$mochi</b> and her performance fee pays you in USDG, never in emissions. and every epoch, the
                 holders still vote on what she wears.
               </p>
               <div className="hero-ctas">
@@ -120,20 +120,20 @@ export default function Home() {
               <p className="sub" style={{ marginBottom: 22 }}>
                 the vault charges a performance fee on yield, <b className="em">never on principal</b>, against a
                 high-water mark, so losses are never billed and recovery is not "profit". the fee is minted as mUSD
-                straight to the staking contract. stake $MOCHI and it streams to you: claim whenever, redeem to USDG
+                straight to the staking contract. stake $mochi and it streams to you: claim whenever, redeem to USDG
                 whenever, unstake whenever.
               </p>
               <div className="grammar" style={{ marginTop: 0 }}>
                 <div className="row head"><span>flow</span><span>where it goes</span></div>
                 <div className="row"><code>100% of deposits</code><span>into spark. the protocol never holds a private key over them.</span></div>
                 <div className="row"><code>90% of yield</code><span>stays in the mUSD share price, for depositors.</span></div>
-                <div className="row"><code>10% of yield</code><span>minted as mUSD to $MOCHI stakers. hard-capped at 20% in the contract.</span></div>
+                <div className="row"><code>10% of yield</code><span>minted as mUSD to $mochi stakers. hard-capped at 20% in the contract.</span></div>
                 <div className="row"><code>0% of principal</code><span>can be touched by anyone but its depositor. there is no admin withdrawal.</span></div>
               </div>
             </div>
             <div className="never">
               <span className="eyebrow">by design</span>
-              <div className="never-item"><b>no emissions</b><span>staking APY is real fee revenue in mUSD, not inflation of $MOCHI.</span></div>
+              <div className="never-item"><b>no emissions</b><span>staking APY is real fee revenue in mUSD, not inflation of $mochi.</span></div>
               <div className="never-item"><b>no lockup</b><span>unstake and withdraw any time. rewards already earned stay yours.</span></div>
               <div className="never-item"><b>no claim treadmill</b><span>vault yield compounds in the share price by itself; staking rewards claim in one call.</span></div>
               <div className="never-item"><b>no keeper</b><span>fees accrue inside user transactions. nothing breaks if nobody shows up.</span></div>
@@ -201,7 +201,6 @@ export default function Home() {
             <div>
               <CopyPlate label="contract" value={c.tokenCa || null} explorer={c.tokenCa ? `${c.explorer}/token/${c.tokenCa}` : null} />
               <div style={{ display: "flex", gap: 12, marginTop: 16, flexWrap: "wrap" }}>
-                <BuyLink />
                 <a className="btn-ghost" href="/story">read her story</a>
               </div>
             </div>
@@ -244,7 +243,7 @@ export default function Home() {
                 <summary>what is mochi?</summary>
                 <p>
                   a savings vault with a mascot. you deposit USDG and receive mUSD, a share whose price only goes up
-                  as yield comes in. stake $MOCHI to earn a cut of the vault's fee, and spend ribbons dressing the
+                  as yield comes in. stake $mochi to earn a cut of the vault's fee, and spend ribbons dressing the
                   girl everyone shares.
                 </p>
               </details>
@@ -257,10 +256,10 @@ export default function Home() {
                 </p>
               </details>
               <details>
-                <summary>what does staking $MOCHI pay?</summary>
+                <summary>what does staking $mochi pay?</summary>
                 <p>
                   the vault's fee stream, paid in mUSD, a claim on real USDG. there are no emissions, so the return
-                  scales with how much the vault holds, not with a token printer. staked $MOCHI still earns ribbons
+                  scales with how much the vault holds, not with a token printer. staked $mochi still earns ribbons
                   and still weighs your vote.
                 </p>
               </details>
@@ -308,7 +307,7 @@ export default function Home() {
                   yield with a face. a real-value protocol on robinhood chain: a USDG vault on spark, fee staking in
                   mUSD, and a mascot the holders dress every epoch.
                 </p>
-                <div className="footer-ca"><b>$MOCHI</b>{c.tokenCa || "not launched yet"}</div>
+                <div className="footer-ca"><b>$mochi</b>{c.tokenCa || "not launched yet"}</div>
                 <a className="builton left" href="https://robinhood.com/chain" target="_blank" rel="noopener noreferrer">
                   <span>built on</span>
                   <img src="/robinhood-chain.svg" alt="Robinhood Chain" />
