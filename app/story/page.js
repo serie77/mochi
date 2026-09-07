@@ -34,9 +34,10 @@ export default function Story() {
         <section>
           <span className="eyebrow">02 · the origin</span>
           <p>
-            she used to live inside a trading terminal on another chain. she scanned pools, bought things, and
-            posted about it. it was loud and it was losing. one day the terminal went dark and she woke up
-            somewhere quieter, with a wardrobe and no positions. she has decided this is an upgrade.
+            nobody deployed her on purpose. the story goes that one block came through with a little room left
+            in it, and the chain, having nothing better to do with the space, dreamed up a girl to keep the
+            numbers company. she woke mid-block with red hair, a white tennis set, and a fully formed opinion
+            about compounding. the wardrobe came later. the opinions never stopped.
           </p>
         </section>
 
@@ -52,7 +53,7 @@ export default function Story() {
         <section>
           <span className="eyebrow">04 · the treasury she keeps</span>
           <p>
-            she runs a vault now. dollars go in, get routed to spark, and earn real interest; her fee, a tenth of
+            she runs a vault now. USDG goes in, gets routed to spark, and earns real interest; her fee, a tenth of
             the yield and never the principal, goes to whoever stakes her token. she takes the job
             more seriously than she will ever admit.
           </p>

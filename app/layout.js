@@ -15,7 +15,7 @@ const mono = JetBrains_Mono({
   display: "swap",
 });
 
-const DESC = "yield with a face. deposit USDG into her spark-routed vault on robinhood chain, stake $MOCHI for the fee stream in real dollars, and dress her every epoch.";
+const DESC = "yield with a face. deposit USDG into her spark-routed vault on robinhood chain, stake $MOCHI for the fee stream in real USDG, and dress her every epoch.";
 
 export const metadata = {
   metadataBase: new URL(process.env.SITE_URL || "http://localhost:3000"),

@@ -46,7 +46,7 @@ export default function Home() {
               <p className="sub hero-sub">
                 mochi is a real-value protocol with a mascot who takes her job seriously. deposit <b>USDG</b> into her
                 vault and it earns spark's savings rate. the share price does the compounding. stake{" "}
-                <b>$MOCHI</b> and her performance fee pays you in dollars, never in emissions. and every epoch, the
+                <b>$MOCHI</b> and her performance fee pays you in USDG, never in emissions. and every epoch, the
                 holders still vote on what she wears.
               </p>
               <div className="hero-ctas">
@@ -90,7 +90,7 @@ export default function Home() {
               <span className="n">2</span>
               <div className="h3">route</div>
               <code>underlying.deposit()</code>
-              <p>the vault pushes every idle dollar into spark's spUSDG, the open savings vault with eight figures already in it.</p>
+              <p>the vault pushes every idle USDG into spark's spUSDG, the open savings vault with eight figures already in it.</p>
             </div>
             <div className="step">
               <span className="n">3</span>
@@ -111,7 +111,7 @@ export default function Home() {
           <div className="section-head">
             <div>
               <span className="eyebrow"><span className="num">02</span><span className="rule" />the fee loop</span>
-              <h2 className="h2">stake $mochi. get paid in dollars.</h2>
+              <h2 className="h2">stake $mochi. get paid in USDG.</h2>
             </div>
             <p className="caption">the protocol's only revenue is a cut of realized yield, and all of it goes to stakers.</p>
           </div>
@@ -235,41 +235,47 @@ export default function Home() {
           <div className="section-head">
             <div>
               <span className="eyebrow"><span className="num">05</span><span className="rule" />faq</span>
-              <h2 className="h2">before you put a dollar in.</h2>
+              <h2 className="h2">before you put USDG in.</h2>
             </div>
           </div>
-          <div className="faq">
-            <aside className="faq-side">
-              <div className="card">
-                <b>talk to a human</b>
-                <span>the team lives on x. dms are open.</span>
-                {x && <a className="link" href={`https://x.com/${x}`} target="_blank" rel="noopener noreferrer">dm @{x} →</a>}
-              </div>
-            </aside>
+          <div className="faq one">
             <div>
               <details open>
-                <summary>where does the yield actually come from?</summary>
+                <summary>what is mochi?</summary>
                 <p>
-                  from spark's USDG savings vault on robinhood chain. spark is the savings arm of sky, the protocol
-                  formerly known as makerdao, and the rate is funded by real protocol revenue. mochi's vault is a thin
-                  erc-4626 wrapper that routes deposits there and takes a cut of the yield for stakers. if spark's
-                  rate is 7%, depositors see ~6.3% and stakers split the rest. nobody prints anything.
+                  a savings vault with a mascot. you deposit USDG and receive mUSD, a share whose price only goes up
+                  as yield comes in. stake $MOCHI to earn a cut of the vault's fee, and spend ribbons dressing the
+                  girl everyone shares.
                 </p>
               </details>
               <details>
-                <summary>what exactly can the team touch?</summary>
+                <summary>where does the yield come from?</summary>
                 <p>
-                  the owner can change the performance fee, capped at 20% in the bytecode, and nothing else. there is
-                  no pause, no allowlist, no admin withdrawal, no upgrade. deposits can only ever be moved by the
-                  wallet that made them.
+                  from spark, one of the largest savings protocols in defi, funded by real revenue rather than token
+                  printing. the vault routes every deposit there and the mUSD share price compounds on its own. if
+                  the rate is 7%, depositors see about 6.3% and stakers split the rest.
                 </p>
               </details>
               <details>
-                <summary>what does staking $mochi pay?</summary>
+                <summary>what does staking $MOCHI pay?</summary>
                 <p>
-                  the vault's fee stream, in mUSD, a claim on real USDG. no emissions, so the apy scales with vault
-                  tvl and spark's rate, not with a token printer. staked $MOCHI still earns ribbons and still weighs
-                  your vote.
+                  the vault's fee stream, paid in mUSD, a claim on real USDG. there are no emissions, so the return
+                  scales with how much the vault holds, not with a token printer. staked $MOCHI still earns ribbons
+                  and still weighs your vote.
+                </p>
+              </details>
+              <details>
+                <summary>can anyone touch my deposit?</summary>
+                <p>
+                  only your wallet. there is no pause button, no upgrade, no admin withdrawal. the one thing the team
+                  can adjust is the fee, and it is hard-capped at 20% forever.
+                </p>
+              </details>
+              <details>
+                <summary>what are ribbons?</summary>
+                <p>
+                  points she hands out every epoch to holders, stakers, and voters. they buy her hair colors, outfits,
+                  and headwear, and they can be gifted to any wallet. they are not a token and never will be.
                 </p>
               </details>
             </div>
@@ -277,11 +283,12 @@ export default function Home() {
         </section>
 
         <section className="closing">
+          <img className="coin" src="/usdg.png" alt="" aria-hidden="true" />
           <img className="girl" src="/hero.png" alt="" aria-hidden="true" />
           <div className="container">
             <h2 className="h1">real yield, worn in public.</h2>
             <p className="sub">
-              deposit a dollar and watch the share price. stake and watch the fees. or just connect, cast a vote, and
+              deposit USDG and watch the share price. stake and watch the fees. or just connect, cast a vote, and
               dress her. the next epoch closes on the clock either way.
             </p>
             <a className="btn" href="/app">open the app</a>

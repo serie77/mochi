@@ -281,7 +281,7 @@ function StakeTab({ me, state, s, signed }) {
       <div className="gate-card">
         <div className="h3">staking is not deployed yet</div>
         <p>
-          stake $MOCHI and the vault's performance fee is paid to you in mUSD: dollars from real yield, never
+          stake $MOCHI and the vault's performance fee is paid to you in mUSD: USDG from real yield, never
           emissions of her own token. it goes live with the token.
         </p>
       </div>

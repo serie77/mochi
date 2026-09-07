@@ -320,6 +320,7 @@ code, .mono { font-family: var(--mono); }
 @media (max-width: 900px) { .voice { grid-template-columns: 1fr; gap: 28px; } }
 
 .faq { display: grid; grid-template-columns: 260px minmax(0, 1fr); gap: 36px; }
+.faq.one { grid-template-columns: minmax(0, 1fr); max-width: 780px; }
 .faq-side .card { padding: 22px; }
 .faq-side .card b { display: block; font-weight: 600; margin-bottom: 4px; }
 .faq-side .card span { font-size: 13.5px; color: var(--ink-65); display: block; margin-bottom: 12px; }
@@ -336,6 +337,8 @@ code, .mono { font-family: var(--mono); }
 .closing .h1 { font-size: clamp(38px, 5vw, 66px); }
 .closing p { margin: 18px auto 30px; max-width: 46ch; }
 .closing .girl { position: absolute; right: 6%; bottom: -40px; height: 92%; width: auto; opacity: 0.55; pointer-events: none; mask-image: linear-gradient(180deg, #000 60%, transparent); }
+.closing .coin { position: absolute; left: 3%; bottom: 6%; height: 68%; width: auto; opacity: 0.2; pointer-events: none; transform: perspective(700px) rotateY(-28deg) rotateX(9deg); mask-image: linear-gradient(180deg, #000 45%, transparent 95%); filter: saturate(1.2) brightness(1.35); }
+@media (max-width: 900px) { .closing .coin { display: none; } }
 .closing .container { position: relative; z-index: 1; }
 @media (max-width: 900px) { .closing .girl { display: none; } }
 
